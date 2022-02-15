@@ -1,0 +1,334 @@
+-- 1.
+
+myEnumFromTo :: Int -> Int -> [Int]
+myEnumFromTo x y = if x > y then [] else x : (myEnumFromTo (x+1) y)
+
+-- 2.
+
+myEnumFromThenTo :: Int -> Int -> Int -> [Int]
+myEnumFromThenTo x y z = if x > z then [] else x : (myEnumFromThenTo y ((y-x) + y) z)
+
+-- 3.
+
+(+++) :: [a] -> [a] -> [a]
+(+++) (x:xs) [] = (x:xs)
+(+++) [] (y:ys) = (y:ys)
+(+++) (x:xs) (y:ys) = x : ((+++) xs (y:ys))
+
+-- 4.
+
+myLast :: [a] -> a
+myLast [x] = x
+myLast (x:xs) = myLast xs
+
+-- 5.
+
+myInit :: [a] -> [a]
+myInit [] = []
+myInit [x] = []
+myInit (x:xs) = x : (myInit xs)
+
+-- 6.
+
+(.!!) :: [a] -> Int -> a
+(.!!) (x:xs) 0 = x
+(.!!) (x:xs) y = (.!!) xs (y - 1)
+
+-- 7.
+
+myReverse :: [a] -> [a]
+myReverse [] = []
+myReverse [x] = [x]
+myReverse (x:xs) = myReverse xs ++ [x]
+
+-- 8.
+
+myTake :: Int -> [a] -> [a]
+myTake 0 (x:xs) = []
+myTake x (h:t) = h : (myTake (x - 1) t)
+
+-- 9.
+
+myDrop :: Int -> [a] -> [a]
+myDrop 0 (x:xs) = (x:xs)
+myDrop x (h:t) = myDrop (x - 1) t
+
+-- 10.
+
+myZip :: [a] -> [b] -> [(a,b)] 
+myZip (x:xs) [] = []
+myZip [] (y:ys) = []
+myZip (x:xs) (y:ys) = (x,y) : (myZip xs ys)
+
+-- 11.
+
+myElem :: Eq a => a -> [a] -> Bool
+myElem x [] = False
+myElem x (h:t) = if (x == h) then True else myElem x t
+
+-- 12.
+
+myReplicate :: Int -> a -> [a] 
+myReplicate 0 x = []
+myReplicate x y = y : (myReplicate (x - 1) y)
+
+-- 13.
+
+myIntersperse :: a -> [a] -> [a]
+myIntersperse x [] = []
+myIntersperse x [y] = [y]
+myIntersperse x (y:ys) = y : x : (myIntersperse x ys) 
+
+-- 14.
+
+myGroup :: Eq a => [a] -> [[a]]
+myGroup [] = []
+myGroup (h:t) = l1 : myGroup l2 where (l1,l2) = span (== h) (h:t)
+
+-- 15.
+
+myConcat :: [[a]] -> [a]
+myConcat [] = []
+myConcat (h:t) = h ++ (myConcat t)
+
+-- 16. vai criando prefixos e no fim adiciona a lista toda
+
+myInits :: [a] -> [[a]]
+myInits [] = [[]]
+myInits xs = myInits (init xs) ++ [xs]
+
+-- 17. no fim é acrescentado sempre []
+
+myTails :: [a] -> [[a]]
+myTails [] = [[]]
+myTails (h:t) = (h:t) : (myTails t)
+
+-- 18. 9/10
+
+myIsPrefixOf :: Eq a => [a] -> [a] -> Bool 
+myIsPrefixOf [] (y:ys) = True
+myIsPrefixOf (x:xs) [] = False
+myIsPrefixOf (x:xs) (y:ys) = if (x == y) then myIsPrefixOf xs ys else False
+
+-- 19. 8/10
+
+myIsSuffixOf :: Eq a => [a] -> [a] -> Bool 
+myIsSuffixOf x y = myIsPrefixOf (reverse x) (reverse y)
+
+-- 20. 7/10
+
+myIsSubsequenceOf :: Eq a => [a] -> [a] -> Bool
+myIsSubsequenceOf [] (y:ys) = True
+myIsSubsquenceOf (x:xs) [] = False
+myIsSubsquenceOf (x:xs) (y:ys) = if x == y then myIsSubsequenceOf xs ys else myIsSubsequenceOf (x:xs) ys
+
+-- 21. Tem que haver uma solução melhor para isto
+
+myElemIndices :: Eq a => a -> [a] -> [Int]
+myElemIndices elem = reverse . fst . foldl step ([],0) where
+    step (is,i) e = (if e == elem then i:is else is, succ i)
+
+-- 22.
+
+myNub :: Eq a => [a] -> [a]
+myNub [] = []
+myNub (h:t) = h : (myNub (myNub1 h t))
+
+myNub1 :: Eq a => a -> [a] -> [a]
+myNub1 x [] = []
+myNub1 x (h:t) = if x == h then myNub1 x t else h : (myNub1 x t)
+
+-- 23.
+
+myDelete :: Eq a => a -> [a] -> [a]
+myDelete x [] = []
+myDelete x (h:t) = if x == h then t else h : (myDelete x t)
+
+-- 24. 
+
+(\\\) :: Eq a => [a] -> [a] -> [a]
+(\\\) (x:xs) [] = (x:xs)
+(\\\) [] (y:ys) = []
+(\\\) [] [] = []
+(\\\) (x:xs) (y:ys) = (\\\) (myDelete y (x:xs)) ys
+
+-- 25. 5/10 Caso o elemento nao pertença adiciona-o ao fim da lista (ou tem que ser por ordem?)
+
+myUnion :: Eq a => [a] -> [a] -> [a] 
+myUnion [] [] = []
+myUnion (x:xs) [] = (x:xs)
+myUnion [] (y:ys) = (y:ys)
+myUnion (x:xs) (y:ys) = myUnion (myUnion1 y (x:xs)) ys
+
+myUnion1 :: Eq a => a -> [a] -> [a]
+myUnion1 x [] = []
+myUnion1 x (h:t) = if elem x (h:t) then (h:t) else (h:t) ++ [x]
+
+-- 26. Ter atencao caso ambas as listas sejam vazias e que caso um elemento nao pertença tem que se apagar todas as ocorrencias
+
+myIntersect :: Eq a => [a] -> [a] -> [a] 
+myIntersect [] [] = []
+myIntersect (x:xs) [] = [] 
+myIntersect [] (y:ys) = []
+myIntersect (x:xs) (y:ys) = if elem x (y:ys) then x : myIntersect xs (y:ys) else myIntersect (myNub1 x (x:xs)) (y:ys)
+
+-- 27.
+
+myInsert :: Ord a => a -> [a] -> [a]
+myInsert x [] = [x]
+myInsert x (h:t) = if x > h then h : (myInsert x t) else x : (h:t)
+
+-- 28.
+
+myMaximum :: Ord a => [a] -> a
+myMaximum [x] = x
+myMaximum (h:t) = if h > myMaximum t then h else myMaximum t
+
+-- 29.
+
+myMinimum :: Ord a => [a] -> a
+myMinimum [x] = x
+myMinimum (h:t) = if h > myMinimum t then myMinimum t else h
+
+-- 30.
+
+mySum :: Num a => [a] -> a
+mySum [] = 0
+mySum (h:t) = h + mySum t
+
+-- 31.
+
+myProduct :: Num a => [a] -> a
+myProduct [] = 1
+myProduct (h:t) = h * myProduct t
+
+-- 32. 
+
+myAnd :: [Bool] -> Bool
+myAnd [] = True
+myAnd (h:t) = if h then myAnd t else h
+
+-- 33.
+
+myOr :: [Bool] -> Bool
+myOr [] = False
+myOr (h:t) = if h then h else myOr t
+
+-- 34. Ter em atenção o caso de uma so palavra, de maneira a que nao acrescente um espaco no fim da palavra
+
+myUnwords :: [String] -> String
+myUnwords [] = []
+myUnwords [x] = x
+myUnwords (h:t) = h ++ " " ++ (myUnwords t)
+
+-- 35. Ter em atenção o caso de uma so palavra, de maneira a que nao acrescente um \n no fim da palavra
+
+myUnlines :: [String] -> String
+myUnlines [] = []
+myUnlines [x] = x
+myUnlines (h:t) = h ++ "\n" ++ myUnlines t
+
+-- 36. não sei se na funcao auxiliar dara erro caso seja dada uma lista vazia
+
+pMaior :: Ord a => [a] -> Int
+pMaior [x] = 0
+pMaior (x:xs) = pMaior1 (maximum (x:xs)) (x:xs)
+
+pMaior1 :: Eq a => a -> [a] -> Int
+pMaior1 x (h:t) = if x == h then 0 else 1 + (pMaior1 x t)
+
+-- 37.
+
+temRepetidos :: Eq a => [a] -> Bool
+temRepetidos [] = False
+temRepetidos (h:t) = if elem h t then True else temRepetidos t
+
+-- 38.
+
+algarismos :: [Char] -> [Char]
+algarismos [] = []
+algarismos (h:t) = if h >= '0' && h <= '9' then h : algarismos t else algarismos t
+
+-- 39. Chamam uma à outra
+
+posImpares :: [a] -> [a]
+posImpares [] = []
+posImpares (h:t) = posPares t
+
+-- 40. Basicamente tem que se fazer as duas de qualquer das formas
+
+posPares :: [a] -> [a]
+posPares [] = []
+posPares (h:t) = h : posImpares t
+
+-- 41. Não esquecer do caso em que só há um elemento
+
+isSorted :: Ord a => [a] -> Bool
+isSorted [] = True
+isSorted [x] = True
+isSorted (h:t) = if h > head t then False else isSorted t
+
+-- 42.
+
+iSort :: Ord a => [a] -> [a]
+iSort [] = []
+iSort (h:t) = myInsert h (iSort t)
+
+-- 43. Caso ambas as strings comecem pelo mesmo elemento tem que comparar os restantes
+
+menor :: String -> String -> Bool
+menor "" _ = True
+menor _ "" = False
+menor (x:xs) (y:ys) | x > y = False
+                    | x == y = menor xs ys
+                    | x < y = True
+
+-- 44.
+
+elemMSet :: Eq a => a -> [(a,Int)] -> Bool
+elemMSet x [] = False
+elemMSet x ((y,z):t) = if x == y then True else elemMSet x t
+
+-- 45.
+
+lengthMSet :: [(a,Int)] -> Int
+lengthMSet [] = 0
+lengthMSet ((x,y):t) = y + lengthMSet t
+
+-- 46.
+
+converteMSet :: [(a,Int)] -> [a] 
+converteMSet [] = []
+converteMSet ((x,y):z) = (replicate y x) ++ (converteMSet z)
+
+-- 47.
+
+insereMSet :: Eq a => a -> [(a,Int)] -> [(a,Int)]
+insereMSet x [] = [(x,1)]
+insereMSet x ((y,z):t) = if x == y then ((y,z+1):t) else (y,z) : insereMSet x t
+
+-- 48.
+
+removeMSet :: Eq a => a -> [(a,Int)] -> [(a,Int)]
+removeMSet x [] = []
+removeMSet x ((y,z):t) = if x == y then removeMSet1 x ((y,z):t) else (y,z) : removeMSet x t
+
+removeMSet1 :: Eq a => a -> [(a,Int)] -> [(a,Int)]
+removeMSet1 x [] = []
+removeMSet1 x ((y,z):t) = if x == y then t else (y,z) : removeMSet1 x t
+
+-- 49. Após construir o primeiro set, tem que apagar todas as ocorrencias do elemento no resto da lista
+
+constroiMSet :: Ord a => [a] -> [(a,Int)]
+constroiMSet [] = []
+constroiMSet (x:xs) = (x,constroiMSet1 x (x:xs)) : constroiMSet (myNub1 x xs)
+
+constroiMSet1 :: Ord a => a -> [a] -> Int
+constroiMSet1 x [] = 0
+constroiMSet1 x (h:t) = if x == h then 1 + constroiMSet1 x t else constroiMSet1 x t
+
+-- 50.
+
+somaPares :: [Int] -> Int
+somaPares [] = 0
+somaPares (h:t) = if mod h 2 == 0 then h + somaPares t else somaPares t
